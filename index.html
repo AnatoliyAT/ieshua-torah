@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Еврейский алфавит — справочник</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="headerContainer"></div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    fetch('includes/header.html')
+      .then(response => response.text())
+      .then(text => {
+        const html = text.replace(/\{BASE\}/g, '');
+        document.getElementById('headerContainer').innerHTML = html;
+      })
+      .catch(error => console.error('Ошибка загрузки шапки:', error));
+  });
+</script>
+
+
+
+  <div class="main-wrapper">
+
+    <!-- ЛЕВАЯ ПАНЕЛЬ -->
+    <aside class="sidebar">
+      <button class="main-toggle" id="alphabetToggle">
+        <span>Еврейский алфавит</span>
+        <span class="arrow-main">▼</span>
+      </button>
+      <div class="letters-list" id="lettersList">
+        <div class="letter-row" data-letter="alef">
+          <span class="letter-symbol">א</span>
+          <span class="letter-name">Алеф</span>
+        </div>
+        <div class="letter-row" data-letter="bet">
+          <span class="letter-symbol">ב</span>
+          <span class="letter-name">Бет</span>
+        </div>
+        <div class="letter-row" data-letter="gimel">
+          <span class="letter-symbol">ג</span>
+          <span class="letter-name">Гимель</span>
+        </div>
+        <div class="letter-row" data-letter="dalet">
+          <span class="letter-symbol">ד</span>
+          <span class="letter-name">Далет</span>
+        </div>
+        <div class="letter-row" data-letter="hei">
+          <span class="letter-symbol">ה</span>
+          <span class="letter-name">Хе</span>
+        </div>
+        <div class="letter-row" data-letter="vav">
+          <span class="letter-symbol">ו</span>
+          <span class="letter-name">Вав</span>
+        </div>
+        <div class="letter-row" data-letter="zayin">
+          <span class="letter-symbol">ז</span>
+          <span class="letter-name">Зайин</span>
+        </div>
+        <div class="letter-row" data-letter="chet">
+          <span class="letter-symbol">ח</span>
+          <span class="letter-name">Хет</span>
+        </div>
+        <div class="letter-row" data-letter="tet">
+          <span class="letter-symbol">ט</span>
+          <span class="letter-name">Тет</span>
+        </div>
+        <div class="letter-row" data-letter="yod">
+          <span class="letter-symbol">י</span>
+          <span class="letter-name">Йод</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ПРАВАЯ ПАНЕЛЬ -->
+    <main class="main-content">
+      <h1>Еврейский алфавит — справочник</h1>
+      <p id="contentPlaceholder">Выберите букву слева, чтобы увидеть описание.</p>
+      <div id="moreLinkContainer"></div>
+      <p class="loading-indicator" id="loadingIndicator">Загрузка данных...</p>
+    </main>
+
+  </div>
+
+  <!-- Место для футера (загружается через JS) -->
+  <div id="footerContainer"></div>
+
+  <!-- Подключаем футер -->
+  <script>
+    (async () => {
+      try {
+        const response = await fetch('includes/footer.html');
+        if (!response.ok) throw new Error('Футер не найден');
+        const text = await response.text();
+        document.getElementById('footerContainer').innerHTML = text;
+      } catch (e) {
+        console.warn('Не удалось загрузить футер:', e);
+      }
+    })();
+  </script>
+
+  <!-- Подключаем JS -->
+  <script src="js/script.js"></script>
+  <script>
+  console.log('BASE путь:', BASE);
+  console.log('Путь к header.html:', BASE + 'includes/header.html');
+</script>
+
+</body>
+</html>

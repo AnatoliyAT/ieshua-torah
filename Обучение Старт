@@ -1,0 +1,748 @@
+Держи полный конспект проекта — от идеи до готового кода. Структурирую так, чтобы можно было распечатать и идти по шагам.
+Еврейский алфавит — справочник
+Учебный проект: HTML + CSS + JavaScript → Java (Spring Boot)
+
+Цель: создать интерактивный справочник еврейского алфавита, где слева — навигация (кнопка «Еврейский алфавит» → список букв), а справа — описание выбранной буквы. Архитектура подготовлена для будущей интеграции с Java-бэкендом.
+
+Окружение: Debian (Linux), терминал, Git, GitHub, GitHub Pages.
+Часть 1. Структура проекта
+
+text
+
+ieshua_torah/
+├── index.html      ← главная страница
+├── css/
+│   └── style.css   ← стили (внешний вид)
+└── js/
+    └── script.js   ← логика (клики, подстановка контента)
+
+Принцип разделения: HTML — только структура, CSS — только внешний вид, JS — только логика. Это стандарт для веб-разработки и особенно важен при работе с Java-бэкендом: фронтенд не зависит от бэкенда, а общается с ним через API.
+Часть 2. index.html
+
+html
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <!-- Кодировка: чтобы еврейские буквы (א, ב, ג...) отображались правильно -->
+  <meta charset="UTF-8">
+
+  <!-- Адаптивность: сайт не ломается на телефоне -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Еврейский алфавит — справочник</title>
+
+  <!-- Подключение внешнего CSS-файла -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ЛЕВАЯ ПАНЕЛЬ: навигация -->
+  <aside class="sidebar">
+
+    <!-- Уровень 1: главная кнопка, раскрывает список букв -->
+    <button class="main-toggle" id="alphabetToggle">
+      <span>Еврейский алфавит</span>
+      <span class="arrow-main">▼</span> <!-- стрелка-индикатор -->
+    </button>
+
+    <!-- Уровень 2: список букв (скрыт по умолчанию, открывается CSS-классом .open) -->
+    <div class="letters-list" id="lettersList">
+
+      <!-- Каждая буква — строка с data-letter (ключ для поиска описания) -->
+      <div class="letter-row" data-letter="alef">
+        <span class="letter-symbol">א</span>
+        <span class="letter-name">Алеф</span>
+      </div>
+
+      <div class="letter-row" data-letter="bet">
+        <span class="letter-symbol">ב</span>
+        <span class="letter-name">Бет</span>
+      </div>
+
+      <div class="letter-row" data-letter="gimel">
+        <span class="letter-symbol">ג</span>
+        <span class="letter-name">Гимель</span>
+      </div>
+
+      <div class="letter-row" data-letter="dalet">
+        <span class="letter-symbol">ד</span>
+        <span class="letter-name">Далет</span>
+      </div>
+
+      <div class="letter-row" data-letter="hei">
+        <span class="letter-symbol">ה</span>
+        <span class="letter-name">Хе</span>
+      </div>
+
+      <div class="letter-row" data-letter="vav">
+        <span class="letter-symbol">ו</span>
+        <span class="letter-name">Вав</span>
+      </div>
+
+      <div class="letter-row" data-letter="zayin">
+        <span class="letter-symbol">ז</span>
+        <span class="letter-name">Зайин</span>
+      </div>
+
+      <div class="letter-row" data-letter="chet">
+        <span class="letter-symbol">ח</span>
+        <span class="letter-name">Хет</span>
+      </div>
+
+      <div class="letter-row" data-letter="tet">
+        <span class="letter-symbol">ט</span>
+        <span class="letter-name">Тет</span>
+      </div>
+
+      <div class="letter-row" data-letter="yod">
+        <span class="letter-symbol">י</span>
+        <span class="letter-name">Йод</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ПРАВАЯ ПАНЕЛЬ: сюда JS вставляет описание буквы -->
+  <main class="main-content">
+    <h1>Еврейский алфавит — справочник</h1>
+    <p id="contentPlaceholder">Выберите букву слева, чтобы увидеть описание.</p>
+    <p class="loading-indicator" id="loadingIndicator">Загрузка данных...</p>
+  </main>
+
+  <!-- Подключение JS-файла: обязательно в конце, перед </body> -->
+  <script src="js/script.js"></script>
+</body>
+</html>
+
+Пояснения к HTML
+
+    data-letter="alef" — это пользовательский атрибут. Он хранит «ключ» буквы. JS берёт этот ключ и ищет по нему описание. В будущем этот же ключ будет передаваться в запросе к Java: fetch('/api/letter/alef').
+    id="contentPlaceholder" — это блок, куда JS будет вставлять текст. Пустой изначально, заполняется при клике.
+    id="loadingIndicator" — индикатор загрузки. Сейчас он имитирует задержку сети. Когда подключишь Java, он будет показываться, пока ждёшь ответ от сервера.
+    <script src="js/script.js"></script> стоит в конце <body> — это правило: сначала загрузится весь HTML, потом скрипт. Иначе скрипт не найдёт элементы, к которым привязывается.
+
+Часть 3. css/style.css
+
+css
+
+/* === Переменные цветов === */
+/* Используем CSS-переменные: удобно менять цветовую схему в одном месте */
+:root {
+  --bg: #f9f9f9;       /* фон страницы */
+  --panel: #ffffff;    /* фон боковой панели */
+  --accent: #2b5a80;   /* акцентный цвет (заголовки) */
+  --text: #333;        /* основной текст */
+  --hover: #f0f0f0;    /* фон при наведении */
+}
+
+/* === Сброс и базовые стили === */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;        /* на всю высоту экрана */
+  display: flex;        /* flexbox: sidebar слева, main-content справа */
+  overflow: hidden;     /* скролл только внутри панелей, не на всей странице */
+}
+
+/* === Левая панель (навигация) === */
+.sidebar {
+  width: 280px;
+  background: var(--panel);
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  padding-top: 16px;
+  overflow-y: auto;     /* если букв много — появляется скролл */
+  flex-shrink: 0;       /* панель не сжимается при уменьшении экрана */
+}
+
+/* === Кнопка «Еврейский алфавит» === */
+.main-toggle {
+  background: none;
+  border: 1px solid #ccc;
+  width: calc(100% - 24px);    /* ширина с отступами по бокам */
+  margin: 0 12px 16px 12px;
+  text-align: left;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 15px;
+  color: var(--text);
+  border-radius: 6px;
+  display: flex;               /* flebox внутри кнопки */
+  align-items: center;
+  gap: 8px;                    /* отступ между текстом и стрелкой */
+}
+
+.main-toggle:hover {
+  border-color: var(--accent);
+  background: var(--hover);
+}
+
+/* === Стрелка-индикатор === */
+.arrow-main {
+  font-size: 12px;
+  transition: transform 0.3s ease;   /* плавный поворот */
+}
+
+/* Класс .rotated добавляется JS — стрелка переворачивается */
+.arrow-main.rotated {
+  transform: rotate(180deg);
+}
+
+/* === Список букв (аккордеон) === */
+/* Закрытое состояние: высота 0, содержимое скрыто */
+.letters-list {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0 12px;
+}
+
+/* Открытое состояние: JS добавляет класс .open */
+.letters-list.open {
+  max-height: 500px;           /* достаточно для всех букв */
+  padding: 0 12px 16px 12px;
+}
+
+/* === Строка буквы === */
+.letter-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  cursor: pointer;             /* показывает, что кликабельно */
+  padding: 6px 0;
+}
+
+.letter-row:hover {
+  background: #f5f5f5;
+}
+
+/* Сам символ буквы (крупный) */
+.letter-symbol {
+  font-size: 20px;
+  font-weight: bold;
+  min-width: 24px;
+  text-align: center;
+}
+
+/* Название буквы (текст) */
+.letter-name {
+  flex: 1;                     /* занимает всё оставшееся место */
+  font-size: 14px;
+}
+
+/* === Правая панель (контент) === */
+.main-content {
+  flex: 1;                     /* занимает всё оставшееся место */
+  padding: 32px;
+  overflow-y: auto;             /* скролл, если текст длинный */
+}
+
+h1 {
+  margin: 0 0 20px 0;
+  font-size: 24px;
+  color: var(--accent);
+}
+
+p {
+  line-height: 1.6;
+  max-width: 700px;            /* текст не растягивается на весь экран */
+}
+
+/* Индикатор загрузки (скрыт по умолчанию) */
+.loading-indicator {
+  display: none;
+  color: #888;
+  font-style: italic;
+}
+
+/* === Адаптивность для телефона === */
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;     /* панель не слева, а сверху */
+  }
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+    max-height: 50vh;           /* панель занимает пол-экрана */
+  }
+  .main-content {
+    padding: 20px;
+  }
+}
+
+Пояснения к CSS
+
+    max-height: 0 + overflow: hidden — это основа аккордеона. Блок существует, но его высота равна нулю, поэтому содержимое не видно. Когда JS добавляет класс .open, max-height становится 500px — и блок плавно раскрывается.
+    transition — анимация. Без неё блок бы появлялся/исчезал мгновенно. С ней — плавно за 0.3 секунды.
+    flex и flex: 1 — flexbox раскладка. Sidebar имеет фиксированную ширину (280px), а .main-content через flex: 1 занимает всё остальное место. Это автоматически подстраивается под любой размер экрана.
+    @media (max-width: 768px) — медиазапрос. На экранах уже 768px (телефоны) макет меняется: панель перемещается наверх, а контент — под неё.
+
+Часть 4. js/script.js
+
+javascript
+
+document.addEventListener('DOMContentLoaded', () => {
+  // === Получаем ссылки на элементы страницы ===
+  const mainToggle = document.getElementById('alphabetToggle');
+  const lettersList = document.getElementById('lettersList');
+  const arrowMain = mainToggle.querySelector('.arrow-main');
+  const contentPlaceholder = document.getElementById('contentPlaceholder');
+  const loadingIndicator = document.getElementById('loadingIndicator');
+
+  // === Имитация базы данных ===
+  // Сейчас тексты хранятся прямо в JS-объекте.
+  // В будущем это заменится на запрос к Java: fetch('/api/letter/alef')
+  const letterData = {
+    alef:  '<strong>Алеф (א)</strong> — первая буква еврейского алфавита. ' +
+           'В современном иврите часто не произносится, но может обозначать ' +
+           'гортанную смычку. В гематрии — 1.',
+
+    bet:   '<strong>Бет (ב)</strong> — вторая буква. Звук [б] или [в] ' +
+           'в зависимости от дагеша. Числовое значение — 2.',
+
+    gimel: '<strong>Гимель (ג)</strong> — третья буква, звук [г]. ' +
+           'Числовое значение — 3.',
+
+    dalet: '<strong>Далет (ד)</strong> — четвёртая буква, звук [д]. ' +
+           'Числовое значение — 4.',
+
+    hei:   '<strong>Хе (ה)</strong> — пятая буква, звук [х] или [h]. ' +
+           'Числовое значение — 5.',
+
+    vav:   '<strong>Вав (ו)</strong> — шестая буква, звук [в] или [у]. ' +
+           'Числовое значение — 6.',
+
+    zayin: '<strong>Зайин (ז)</strong> — седьмая буква, звук [з]. ' +
+           'Числовое значение — 7.',
+
+    chet:  '<strong>Хет (ח)</strong> — восьмая буква, гортанный звук [х]. ' +
+           'Числовое значение — 8.',
+
+    tet:   '<strong>Тет (ט)</strong> — девятая буква, звук [т]. ' +
+           'Числовое значение — 9.',
+
+    yod:   '<strong>Йод (י)</strong> — десятая буква, звук [й]. ' +
+           'Числовое значение — 10.'
+  };
+
+  // =====================================================
+  //   ГЛАВНОЕ МЕСТО ДЛЯ БУДУЩЕЙ JAVA-ИНТЕГРАЦИИ
+  // =====================================================
+  // Сейчас getLetterData берёт текст из JS-объекта.
+  // Когда будет Java-бэкенд, эта функция заменяется на fetch().
+  //
+  // async/await — это современный способ работы с асинхронными
+  // операциями (запросы к серверу). Не блокирует страницу,
+  // пока ждёт ответ.
+  // =====================================================
+  async function getLetterData(key) {
+    // --- Вариант 1 (сейчас): данные из JS-объекта ---
+    return letterData[key];
+
+    // --- Вариант 2 (будущее): запрос к Java-бэкенду ---
+    // Раскомментировать, когда Spring Boot будет готов:
+    //
+    // const response = await fetch(`/api/letter/${key}`);
+    // const data = await response.json();
+    // return data.content;
+  }
+
+  // =====================================================
+  //   ЛОГИКА: раскрытие/закрытие списка букв
+  // =====================================================
+  mainToggle.addEventListener('click', () => {
+    const isOpen = lettersList.classList.contains('open');
+
+    if (!isOpen) {
+      // Открываем список
+      lettersList.classList.add('open');
+      arrowMain.classList.add('rotated');  // стрелка переворачивается
+    } else {
+      // Закрываем список
+      lettersList.classList.remove('open');
+      arrowMain.classList.remove('rotated');
+      // Сбрасываем контент справа
+      contentPlaceholder.innerHTML = 'Выберите букву слева, чтобы увидеть описание.';
+    }
+  });
+
+  // =====================================================
+  //   ЛОГИКА: клик по букве → описание справа
+  // =====================================================
+  // forEach проходит по всем .letter-row и вешает
+  // обработчик клика на каждый.
+  document.querySelectorAll('.letter-row').forEach(row => {
+    row.addEventListener('click', async () => {
+      // data-letter="alef" → получаем "alef"
+      const key = row.getAttribute('data-letter');
+      await showContent(key);
+    });
+  });
+
+  // =====================================================
+  //   ФУНКЦИЯ: показать контент в правой панели
+  // =====================================================
+  async function showContent(key) {
+    // Показываем индикатор загрузки
+    loadingIndicator.style.display = 'block';
+    contentPlaceholder.style.opacity = '0.6';  // приглушаем старый текст
+
+    try {
+      // Получаем данные (из JS сейчас, из Java — потом)
+      const content = await getLetterData(key);
+
+      if (content) {
+        // Вставляем HTML в блок (innerHTML позволяет теги <strong> и т.д.)
+        contentPlaceholder.innerHTML = content;
+      } else {
+        contentPlaceholder.innerHTML = '<strong>Данные не найдены</strong>.';
+      }
+    } catch (error) {
+      // Если что-то пошло не так (в будущем — ошибка сети/сервера)
+      console.error('Ошибка загрузки данных:', error);
+      contentPlaceholder.innerHTML = '<strong>Ошибка при загрузке данных.</strong>';
+    } finally {
+      // finally выполняется ВСЕГДА — и при успехе, и при ошибке
+      loadingIndicator.style.display = 'none';
+      contentPlaceholder.style.opacity = '1';
+    }
+  }
+});
+
+Пояснения к JavaScript
+Концепция	Что делает	Зачем важно
+DOMContentLoaded	ждёт, пока вся страница загрузится	скрипт не запустится раньше, чем появятся элементы
+addEventListener('click', ...)	вешает обработчик клика	основа всей интерактивности
+classList.add / remove	добавляет/убирает CSS-класс	так JS управляет внешним видом без изменения CSS
+data-letter + getAttribute	читает ключ буквы	связывает HTML с данными
+async / await	асинхронный вызов	не блокирует страницу, пока ждёт данные
+try / catch / finally	обработка ошибок	если сервер упадёт — пользователь увидит сообщение, а не белый экран
+innerHTML	вставляет HTML-код в элемент	позволяет использовать теги <strong>, <p> и т.д. в текстах
+Часть 5. Git и GitHub — шпаргалка команд
+Настройка (один раз)
+
+bash
+
+# Проверить, установлен ли Git
+git --version
+
+# Настроить имя и почту (нужно для коммитов)
+git config --global user.name "AnatoliyAT"
+git config --global user.email "твоя_почта@example.com"
+
+# Чтобы Git не спрашивал пароль каждый раз (кэш на 15 минут)
+git config --global credential.helper cache
+
+Создание репозитория
+
+bash
+
+# Перейти в папку с проектом
+cd /home/anatoliyat/ieshua_torah
+
+# Инициализировать Git в этой папке
+git init
+
+# Переименовать ветку master → main (современный стандарт)
+git branch -m main
+
+# Создать файл .gitignore (чтобы не заливать лишнее)
+nano .gitignore
+# Содержимое .gitignore:
+# target/
+# *.jar
+# *.war
+# .idea/
+# *.iml
+# node_modules/
+# .DS_Store
+
+Коммит и отправка на GitHub
+
+bash
+
+# Добавить все файлы в индекс
+git add .
+
+# Проверить, что добавилось
+git status
+
+# Создать коммит (фиксация изменений)
+git commit -m "Начальная версия: еврейский алфавит, навигация слева, контент справа"
+
+# Привязать удалённый репозиторий (один раз)
+git remote add origin https://github.com/AnatoliyAT/ieshua_torah.git
+
+# Отправить код на GitHub
+git push -u origin main
+
+Повседневная работа (каждый раз после правок)
+
+bash
+
+# Изменил файлы → добавить → коммит → отправить
+git add .
+git commit -m "Добавил описание для буквы Хет"
+git push
+
+Вставка текста в терминале Debian
+
+    Shift + Insert — самый надёжный способ
+    Правая кнопка мыши → Paste
+    Средняя кнопка мыши (колёсико) — вставка выделенного текста
+    Ctrl + Shift + V — в некоторых терминалах
+
+Personal Access Token
+
+GitHub не принимает пароль для git push. Вместо него — токен:
+
+    GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+    Generate new token (classic)
+    Имя: debian-git-push
+    Expiration: No expiration (или по желанию)
+    Scope: галочка repo
+    Generate → скопировать токен (ghp_...)
+    При git push: логин — AnatoliyAT, пароль — вставить токен
+
+Часть 6. GitHub Pages — публикация сайта
+
+    Открыть репозиторий на GitHub.
+    Settings → Pages (в левом меню).
+    Build and deployment:
+        Branch: main
+        Folder: / (root)
+    Save.
+    Через 1–2 минуты — ссылка: https://anatoliyat.github.io/ieshua_torah
+
+Часть 7. Архитектура и план перехода на Java
+Текущая схема (без бэкенда)
+
+text
+
+Пользователь
+    ↓ клик на букву
+index.html (data-letter="alef")
+    ↓
+js/script.js → getLetterData("alef")
+    ↓
+letterData["alef"] (JS-объект)
+    ↓
+текст вставляется в contentPlaceholder
+
+Будущая схема (с Java-бэкендом)
+
+text
+
+Пользователь
+    ↓ клик на букву
+index.html (data-letter="alef")
+    ↓
+js/script.js → fetch('/api/letter/alef')
+    ↓
+Java (Spring Boot) — LetterController
+    ↓
+База данных (PostgreSQL / H2)
+    ↓
+JSON: {"content": "<strong>Алеф (א)</strong> — первая буква..."}
+    ↓
+JS вставляет текст в contentPlaceholder
+
+Что нужно будет сделать на Java
+
+    Создать Spring Boot проект.
+    Написать контроллер LetterController с методом:
+
+    java
+
+    @GetMapping("/api/letter/{key}")
+    public Map<String, String> getLetter(@PathVariable String key) {
+        // Здесь будет запрос к БД
+        // Пока — статические данные
+    }
+
+    Настроить CORS (чтобы фронтенд на GitHub Pages мог обращаться к Java-серверу на Debian).
+    В js/script.js раскомментировать блок с fetch — и сайт начнёт тянуть данные с Java.
+
+Что при этом не меняется
+
+    index.html — без изменений.
+    style.css — без изменений.
+    Вся структура и логика навигации — без изменений.
+    Меняется только функция getLetterData — из объекта letterData на fetch.
+
+Часть 8. Шпаргалка по концепциям
+HTML
+Элемент	Назначение
+<aside>	боковая панель (навигация)
+<main>	основное содержимое
+data-letter="..."	пользовательский атрибут — «ключ» буквы
+<script src="...">	подключение внешнего JS-файла (всегда перед </body>)
+CSS
+Свойство	Назначение
+display: flex	flexbox — расположение элементов в строку/колонку
+max-height: 0 + overflow: hidden	основа аккордеона — скрывает содержимое
+.open { max-height: 500px }	открывает аккордеон (JS добавляет класс)
+transition	плавная анимация
+transform: rotate(180deg)	переворот стрелки
+@media (max-width: 768px)	адаптивность для телефонов
+JavaScript
+Метод	Назначение
+document.addEventListener('DOMContentLoaded', ...)	ждать загрузку страницы
+document.getElementById(...)	найти элемент по id
+document.querySelectorAll(...)	найти все элементы по селектору
+addEventListener('click', ...)	повесить обработчик клика
+classList.add / remove	добавить/убрать CSS-класс
+getAttribute('data-letter')	прочитать значение data-атрибута
+innerHTML	вставить HTML в элемент
+async / await	асинхронный вызов (для fetch)
+try / catch / finally	обработка ошибок
+Git
+Команда	Назначение
+git init	создать локальный репозиторий
+git add .	добавить все файлы в индекс
+git commit -m "..."	зафиксировать изменения
+git push	отправить на GitHub
+git remote set-url origin ...	изменить URL репозитория
+git status	проверить состояние
+git branch -m main	переименовать ветку
+Часть 9. Типичные ошибки и решения
+Симптом	Причина	Решение
+Сайт без стилей (белый текст на белом фоне)	неверный путь к CSS	проверить <link rel="stylesheet" href="css/style.css">
+Аккордеон не раскрывается	JS не подключился	проверить путь <script src="js/script.js"> и регистр букв в имени файла
+Repository not found при push	неверный URL репозитория	git remote set-url origin https://github.com/AnatoliyAT/ieshua_torah.git
+Password authentication is not supported	GitHub не принимает пароль	использовать Personal Access Token вместо пароля
+Описание появляется внизу, а не справа	нет display: flex на body или CSS не загрузился	проверить css/style.css и путь к нему
+Стрелка не переворачивается	JS не нашёл .arrow-main	проверить, что в HTML есть <span class="arrow-main">
+
+Это полная картина проекта на текущий момент. Следующий шаг — Java-контроллер на Spring Boot, который заменит JS-объект letterData на реальные данные с сервера. Когда будешь готов — скажи, и я дам готовый код контроллера с инструкцией по запуску на Debian.
+Я
+Алиса, как тебя держать в курсе всех изменений на Github?
+Алиса
+
+Я не вижу GitHub автоматически, но мы легко выстроим простой процесс, чтобы я всегда понимала, что ты поменял. Учитывая, что ты на Debian, учишь Java и хочешь всё делать поэтапно — вот рабочие варианты от самого простого к более продвинутому.
+Самый простой способ (для старта и учёбы)
+
+Ты просто пишешь мне в формате:
+
+    [PLAN] Сделал правки в index.html и style.css: добавил адаптив для мобильных.
+    [GIT] git commit -m "mobile styles" + git push
+    [FILES] index.html, css/style.css
+
+Или ещё короче:
+
+    [CHANGES] Добавил аккордеон для букв, стили подправил.
+    [STATUS] Push прошёл, сайт обновился.
+
+Зачем это нужно: мне не нужен весь код каждый раз. Достаточно 2–3 строк: что ты сделал, какие файлы трогал, прошёл ли push. Тогда я смогу:
+
+    подсказать, не сломал ли ты что-то при рефакторинге;
+    сразу дать Java‑код, который стыкуется с новыми классами/ID;
+    напомнить про CORS, если ты меняешь API‑эндпоинты.
+
+«Умный» способ: присылать только diff (разницу)
+
+Если хочешь быть максимально точным и не спамить кодом, используй в терминале Debian:
+bash
+
+git diff --cached      # если файлы уже git add, но ещё не commit
+git diff                # текущие изменения (не добавленные)
+git diff HEAD^..HEAD    # разница последнего коммита (идеально для отчёта)
+
+Скопируй вывод git diff и вставь сюда. Я сразу вижу: где удалил, где добавил, где изменил. Это как раз то, что делают на реальных Java‑проектах при код‑ревью.
+
+Пример сообщения мне:
+
+    [DIFF] Вот изменения последнего коммита:
+    diff
+
+    diff --git a/js/script.js b/js/script.js
+    index abc123..def456 100644
+    --- a/js/script.js
+    +++ b/js/script.js
+    @@ -10,6 +10,7 @@
+    -  const content = await getLetterData(key);
+    +  const content = await fetchLetter(key);
+
+    [STATUS] git push прошёл.
+
+Я по diff сразу скажу, как подправить Java‑контроллер, чтобы он отдавал нужный JSON.
+Если ты делаешь Pull Request (PR)
+
+На GitHub создаёшь PR (например, ветку feature/accordion → main). Тогда достаточно прислать мне:
+
+    ссылку на PR (GitHub показывает все изменения в удобном виде);
+    краткое описание: что ты меняешь и зачем.
+
+Это лучший вариант, если планируешь показывать проект как портфолио: PR — это и есть «история изменений», которую смотрят работодатели.
+Что присылать, если мы готовим Java‑интеграцию
+
+Когда будешь переходить к Spring Boot, мне важно знать:
+
+    Какие URL ты хочешь использовать (например, /api/letter/{key}).
+    Какой JSON ты ожидаешь (структура ответа).
+    Какие файлы ты меняешь во фронтенде (особенно script.js, где будет fetch).
+
+Пример:
+
+    [API] Хочу эндпоинт: GET /api/letter/{key}.
+    [JSON] Ответ: { "content": "<strong>Алеф</strong> — первая буква..." }.
+    [FRONT] В js/script.js раскомментирую fetch, уберу letterData.
+    [STATUS] Изменения в ветке, готов PR.
+
+Тогда я дам готовый LetterController и подскажу про CORS и application.properties.
+Чего присылать НЕ надо
+
+    Не надо копировать весь index.html, style.css или script.js каждый раз.
+    Не надо присылать логи git или ошибки терминала без контекста.
+    Если ошибка — лучше 1–2 строки ошибки + что ты делал перед этим.
+
+Практический шаблон (скопируй и используй)
+
+Выбери один из вариантов под свою ситуацию:
+Вариант А (быстрый ежедневный отчёт)
+text
+
+[PROJECT] ieshua_torah
+[CHANGES] Добавил адаптив аккордеона, поправил отступы.
+[FILES] css/style.css, js/script.js
+[STATUS] git push прошёл.
+[NEXT] Хочу подключить Java-контроллер для букв.
+
+Вариант Б (для интеграции с Java)
+text
+
+[PROJECT] ieshua_torah
+[API] Эндпоинт: GET /api/letter/{key}
+[JSON] { "content": "..." }
+[FRONT] В script.js раскомментирую fetch, уберу letterData.
+[DIFF] (вставь сюда git diff)
+[NEXT] Нужен готовый Spring Boot контроллер.
+
+Важные нюансы под твой стек (Debian + Java + Git)
+
+    Всегда делай коммиты с понятными сообщениями. Вместо fix пиши: add accordion mobile styles, refactor letter data loading. Это и тебе поможет, и мне сразу понятно, что менялось.
+    Не пушь сразу в main, если делаешь крупные правки. Создай ветку:
+    bash
+
+    git checkout -b feature/accordion
+    # работаешь, коммитишь
+    git push origin feature/accordion
+
+    Потом сделаешь PR. Так ты не сломаешь сайт и сможешь спокойно рефакторить под Java.
+    Если теряешь доступ к телефону (как раньше), держи заметки в текстовом файле в папке проекта, например NOTES.md, и коммить его вместе с кодом. Тогда даже без чата у тебя будет история изменений.
+
+Как это поможет твоему плану по Java
+
+Когда ты будешь присылать мне такие отчёты, я смогу:
+
+    давать точечные Java‑фрагменты, которые сразу стыкуются с твоим фронтендом;
+    предупреждать о конфликтах (например, если JS ждёт один JSON, а Java отдаёт другой);
+    помогать с CORS и конфигами Spring, чтобы GitHub Pages мог запрашивать данные с твоего Debian‑сервера;
+    готовить контроллеры и DTO именно под твои ID и ключи (data-letter="alef" и т.д.).
+
+Если скажешь, какой стиль тебе ближе (коротко текстом, diff, PR‑ссылка), я подстроюсь и дальше буду отвечать именно в этом формате. Какой вариант выбираешь? 😊

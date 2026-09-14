@@ -1,0 +1,263 @@
+:root {
+  --bg: #f9f9f9;
+  --panel: #ffffff;
+  --accent: #2b5a80;
+  --text: #333;
+  --hover: #f0f0f0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Обёртка: сайдбар + контент */
+.main-wrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* === Левая панель === */
+.sidebar {
+  width: 280px;
+  background: var(--panel);
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  padding-top: 16px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+/* === Кнопка «Еврейский алфавит» === */
+.main-toggle {
+  background: none;
+  border: 1px solid #ccc;
+  width: calc(100% - 24px);
+  margin: 0 12px 16px 12px;
+  text-align: left;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 15px;
+  color: var(--text);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.main-toggle:hover {
+  border-color: var(--accent);
+  background: var(--hover);
+}
+
+/* === Стрелка === */
+.arrow-main {
+  font-size: 12px;
+  transition: transform 0.3s ease;
+}
+
+.arrow-main.rotated {
+  transform: rotate(180deg);
+}
+
+/* === Список букв (аккордеон) === */
+.letters-list {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0 12px;
+}
+
+.letters-list.open {
+  max-height: 500px;
+  padding: 0 12px 16px 12px;
+}
+
+/* === Строка буквы === */
+.letter-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+
+.letter-row:hover {
+  background: #f5f5f5;
+}
+
+.letter-symbol {
+  font-size: 20px;
+  font-weight: bold;
+  min-width: 24px;
+  text-align: center;
+}
+
+.letter-name {
+  flex: 1;
+  font-size: 14px;
+}
+
+/* === Правая панель === */
+.main-content {
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+}
+
+h1 {
+  margin: 0 0 20px 0;
+  font-size: 24px;
+  color: var(--accent);
+}
+
+h2 {
+  color: var(--accent);
+  font-size: 18px;
+  margin-top: 24px;
+}
+
+p {
+  line-height: 1.6;
+  max-width: 700px;
+}
+
+ul {
+  line-height: 1.8;
+  max-width: 700px;
+}
+
+a {
+  color: var(--accent);
+}
+
+.loading-indicator {
+  display: none;
+  color: #888;
+  font-style: italic;
+}
+
+/* === Кнопка «Подробнее» === */
+.more-btn {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 10px 20px;
+  background-color: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.more-btn:hover {
+  background-color: #1a4260;
+  text-decoration: none;
+  color: #fff;
+}
+
+.more-btn:active {
+  transform: translateY(1px);
+}
+
+/* === Футер === */
+footer {
+  width: 100%;
+  padding: 20px 0;
+  border-top: 1px solid #ddd;
+  background: var(--panel);
+  color: #777;
+  font-size: 13px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* === Адаптив для телефона === */
+@media (max-width: 768px) {
+  .main-wrapper {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+    max-height: 50vh;
+  }
+  .main-content {
+    padding: 20px;
+  }
+}
+/* === Верхнее меню === */
+.site-header {
+  background: var(--panel);
+  border-bottom: 1px solid #ddd;
+  flex-shrink: 0;
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.site-logo {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.site-nav {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.site-nav a {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 15px;
+  padding: 4px 0;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.site-nav a:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.site-nav a.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* Адаптив для телефона */
+@media (max-width: 768px) {
+  .header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 16px;
+  }
+  .site-nav {
+    gap: 16px;
+  }
+  .site-nav a {
+    font-size: 14px;
+  }
+}
