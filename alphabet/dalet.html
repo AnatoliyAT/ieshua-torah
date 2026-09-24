@@ -1,1 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Далет (ד) — еврейский алфавит</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="main-wrapper">
+    <aside class="sidebar">
+      <button class="main-toggle" id="alphabetToggle">
+        <span>Еврейский алфавит</span>
+        <span class="arrow-main">▼</span>
+      </button>
+      <div class="letters-list" id="lettersList">
+        <div class="letter-row" data-letter="alef"><span class="letter-symbol">א</span><span class="letter-name">Алеф</span></div>
+        <div class="letter-row" data-letter="bet"><span class="letter-symbol">ב</span><span class="letter-name">Бет</span></div>
+        <div class="letter-row" data-letter="gimel"><span class="letter-symbol">ג</span><span class="letter-name">Гимел</span></div>
+        <div class="letter-row active" data-letter="dalet"><span class="letter-symbol">ד</span><span class="letter-name">Далет</span></div>
+        <div class="letter-row" data-letter="hei"><span class="letter-symbol">ה</span><span class="letter-name">Хе</span></div>
+        <div class="letter-row" data-letter="vav"><span class="letter-symbol">ו</span><span class="letter-name">Вав</span></div>
+        <div class="letter-row" data-letter="zayin"><span class="letter-symbol">ז</span><span class="letter-name">Зайин</span></div>
+        <div class="letter-row" data-letter="chet"><span class="letter-symbol">ח</span><span class="letter-name">Хет</span></div>
+        <div class="letter-row" data-letter="tet"><span class="letter-symbol">ט</span><span class="letter-name">Тет</span></div>
+        <div class="letter-row" data-letter="yod"><span class="letter-symbol">י</span><span class="letter-name">Йод</span></div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <h1>Далет (ד)</h1>
+      <p><strong>Далет</strong> — четвёртая буква еврейского алфавита. Её имя означает «дверь». Гематрия — 4.</p>
+
+      <h2>Составные части буквы</h2>
+      <figure>
+        <svg viewBox="0 0 100 100" width="150" height="150" aria-label="Буква Далет">
+          <path d="M20 85 H80" stroke="#2B1B17" stroke-width="8" fill="none" stroke-linecap="round" />
+          <path d="M80 85 V20" stroke="#2B1B17" stroke-width="8" fill="none" stroke-linecap="round" />
+        </svg>
+        <figcaption>Далет: угол как открытая дверь. Горизонталь — небо, вертикаль — поток.</figcaption>
+      </figure>
+
+      <h2>Символика</h2>
+      <p>Далет — буква открытости и смирения. Она не удерживает, а пропускает. Образ «за дверью тебя кто‑то ждёт» делает букву глубоко личной: это приглашение к встрече.</p>
+      <p>Связь с именем <strong>Давид (דוד)</strong>: далет — первая буква имени и образ «двери» к завету.</p>
+
+      <h2>Полезные ссылки</h2>
+      <ul>
+        <li><a href="../index.html">&larr; Вернуться к списку букв</a></li>
+        <li><a href="gimel.html">← Гимел (ג)</a></li>
+        <li><a href="hei.html">Хе (ה) →</a></li>
+      </ul>
+    </main>
+  </div>
+
+  <div id="footerContainer"></div>
+  <script>
+    (async () => {
+      try {
+        const r = await fetch('../includes/footer.html');
+        if (!r.ok) throw new Error('Футер не найден');
+        document.getElementById('footerContainer').innerHTML = await r.text();
+      } catch (e) { console.warn('Футер:', e); }
+    })();
+  </script>
+  <script src="../js/script.js"></script>
+</body>
+</html>
 
