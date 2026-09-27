@@ -1,9 +1,14 @@
+/* === Переменные и сброс === */
 :root {
   --bg: #f9f9f9;
   --panel: #ffffff;
   --accent: #2b5a80;
   --text: #333;
   --hover: #f0f0f0;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
@@ -17,14 +22,75 @@ body {
   flex-direction: column;
 }
 
-/* Обёртка: сайдбар + контент */
+/* === Верхнее меню (шапка) === */
+.site-header {
+  background: var(--panel);
+  border-bottom: 1px solid #ddd;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;   /* Логотип сверху, меню снизу */
+  align-items: center;       /* Центрируем всё по горизонтали */
+  gap: 16px;                 /* Расстояние между логотипом и меню */
+}
+
+.site-logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.site-nav {
+  display: flex;
+  gap: 4px;                   /* Маленькие промежутки между кнопками */
+  flex-wrap: wrap;
+  justify-content: center;    /* Центрирует пункты меню */
+  padding: 8px 12px;
+  background: var(--bg);     /* Лёгкий фон под меню */
+  border: 1px solid #e0e0e0;  /* Тонкая рамка */
+  border-radius: 12px;       /* Мягкие скругления */
+  overflow: hidden;
+}
+
+.site-nav a {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 10px 18px;
+  border-radius: 8px;        /* Скругление у каждой кнопки */
+  transition: all 0.2s ease;
+}
+
+.site-nav a:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: translateY(-2px); /* Лёгкое поднятие при наведении */
+  box-shadow: 0 4px 8px rgba(43, 90, 128, 0.3);
+}
+
+.site-nav a.active {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+}
+
+/* === Обёртка: сайдбар + контент === */
 .main-wrapper {
   display: flex;
   flex: 1;
   overflow: hidden;
 }
 
-/* === Левая панель === */
+/* === Левая панель (сайдбар) === */
 .sidebar {
   width: 280px;
   background: var(--panel);
@@ -107,7 +173,7 @@ body {
   font-size: 14px;
 }
 
-/* === Правая панель === */
+/* === Правая панель (контент) === */
 .main-content {
   flex: 1;
   padding: 32px;
@@ -195,69 +261,30 @@ footer {
   .main-content {
     padding: 20px;
   }
-}
-/* === Верхнее меню === */
-.site-header {
-  background: var(--panel);
-  border-bottom: 1px solid #ddd;
-  flex-shrink: 0;
-}
 
-.header-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 14px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.site-logo {
-  font-size: 18px;
-  font-weight: bold;
-  color: var(--accent);
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.site-nav {
-  display: flex;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-
-.site-nav a {
-  color: var(--text);
-  text-decoration: none;
-  font-size: 15px;
-  padding: 4px 0;
-  border-bottom: 2px solid transparent;
-  transition: border-color 0.2s ease, color 0.2s ease;
-}
-
-.site-nav a:hover {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-}
-
-.site-nav a.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-}
-
-/* Адаптив для телефона */
-@media (max-width: 768px) {
   .header-inner {
+    padding: 16px;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 12px 16px;
+    align-items: stretch;
   }
+
+  .site-logo {
+    text-align: center;
+    font-size: 20px;
+  }
+
   .site-nav {
-    gap: 16px;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 8px;
+    margin-bottom: 10px;
   }
+
   .site-nav a {
-    font-size: 14px;
+    text-align: center;
+    padding: 12px;
+    margin: 2px 0;
+    box-shadow: none;
+    transform: none;
   }
 }
