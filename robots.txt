@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /includes/
+Disallow: /js/
+Disallow: /css/
+Disallow: /.git/
+Disallow: *.bak$
+
+Sitemap: https://ieshua-torah.ru/sitemap.xml
+ 
