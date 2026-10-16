@@ -126,6 +126,44 @@
   console.log('BASE путь:', BASE);
   console.log('Путь к header.html:', BASE + 'includes/header.html');
 </script>
+<section class="feedback-block" style="
+  max-width: 560px; margin: 40px auto; padding: 28px;
+  border: 1px solid #dcdcdc; border-radius: 10px;
+  background-color: #fdfdfd; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+  <h3 style="margin-top: 0; margin-bottom: 8px; color: #2c3e50; font-size: 1.15rem;">Хотите что-то спросить?</h3>
+  <p style="color: #5a5a5a; margin-bottom: 20px; line-height: 1.5;">
+    Если в разборе буквы что-то осталось непонятным, или хочется пообсуждать смысл — напишите, я с радостью отвечу.
+  </p>
+
+  <!-- Твоя ссылка уже здесь -->
+  <form action="https://formspree.io/f/mjygjjba" method="POST">
+    
+    <!-- Меняй только текст в кавычках: для Вав — «Буква Вав», для Хей — «Буква Хей» и т.д. -->
+    <input type="hidden" name="subject" value="Вопрос по статье: Буква Вав">
+
+    <div style="margin-bottom: 14px;">
+      <label for="name" style="display: block; margin-bottom: 5px; color: #3a3a3a; font-weight: 500;">Ваше имя</label>
+      <input type="text" id="name" name="name" required placeholder="Например, Анатолий" style="width: 100%; padding: 9px 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
+    </div>
+
+    <div style="margin-bottom: 14px;">
+      <label for="email" style="display: block; margin-bottom: 5px; color: #3a3a3a; font-weight: 500;">Email для ответа</label>
+      <input type="email" id="email" name="email" required placeholder="example@mail.ru" style="width: 100%; padding: 9px 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;">
+    </div>
+
+    <div style="margin-bottom: 18px;">
+      <label for="message" style="display: block; margin-bottom: 5px; color: #3a3a3a; font-weight: 500;">Ваш вопрос</label>
+      <textarea id="message" name="message" rows="4" required placeholder="Что хочется уточнить?" style="width: 100%; padding: 9px 12px; border: 1px solid #ccc; border-radius: 6px; resize: vertical; box-sizing: border-box;"></textarea>
+    </div>
+
+    <button type="submit" style="
+      background-color: #6b8e23; color: white; padding: 11px 22px;
+      border: none; border-radius: 6px; cursor: pointer; font-size: 15px;">
+      Отправить вопрос
+    </button>
+  </form>
+</section>
 
 </body>
 </html>
